@@ -76,6 +76,7 @@ class _CartState extends State<Cart> {
                           ),
                           Text('Price: ' '${cartList[index]["price"]}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
+                          Text('')
                         ],
                       ),
                     ),

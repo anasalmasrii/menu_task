@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:item_count_number_button/item_count_number_button.dart';
 import 'package:menu_task/cart.dart';
 import 'package:menu_task/poducts.dart';
 import 'package:menu_task/product/bloc/product_bloc.dart';
@@ -154,8 +155,10 @@ class _mainmenuState extends State<mainmenu> {
     );
   }
 
+  int itemCount = 0;
   Widget categories(String id, String img, String productName,
       double productPrice, screenWidth, screenHeight) {
+    // int itemCount = 0;
     return Padding(
         padding: EdgeInsets.only(
             top: screenHeight * 0.02,
@@ -237,7 +240,8 @@ class _mainmenuState extends State<mainmenu> {
                           cartList.add({
                             'id': id,
                             'name': productName,
-                            'price': productPrice
+                            'price': productPrice,
+                            'items': itemCount
                           });
                           totalPrice = totalPrice + productPrice;
                         } else {
@@ -253,7 +257,8 @@ class _mainmenuState extends State<mainmenu> {
                             cartList.add({
                               'id': id,
                               'name': productName,
-                              'price': productPrice
+                              'price': productPrice,
+                              'item': itemCount
                             });
                             totalPrice = totalPrice + productPrice;
                           }
@@ -261,6 +266,7 @@ class _mainmenuState extends State<mainmenu> {
 
                         print(cartList);
                         print('Total Price = $totalPrice');
+                        print(itemCount);
                       },
                       child: Column(
                         children: [
@@ -268,12 +274,42 @@ class _mainmenuState extends State<mainmenu> {
                             padding:
                                 EdgeInsets.only(bottom: screenHeight * 0.01),
                             child: Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.green[200],
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10))),
-                              child: _buildTrailingWidget(),
-                            ),
+                                decoration: BoxDecoration(
+                                    color: Colors.green[200],
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(10))),
+                                child: FittedBox(
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.remove,
+                                          color: const Color.fromARGB(
+                                              255, 255, 37, 22),
+                                        ),
+                                        onPressed: () => setState(() =>
+                                            itemCount != 0
+                                                ? itemCount--
+                                                : itemCount),
+                                      ),
+                                      Text(
+                                        itemCount.toString(),
+                                        style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(
+                                          Icons.add,
+                                          color: const Color.fromARGB(
+                                              255, 49, 255, 56),
+                                        ),
+                                        onPressed: () =>
+                                            setState(() => itemCount++),
+                                      )
+                                    ],
+                                  ),
+                                )),
                           ),
                           Container(
                             width: screenWidth * 0.25,
@@ -302,33 +338,33 @@ class _mainmenuState extends State<mainmenu> {
           ),
         ));
   }
-
-  Widget _buildTrailingWidget() {
-    int itemCount = 0;
-    return FittedBox(
-      child: Row(
-        children: [
-          IconButton(
-            icon: Icon(
-              Icons.remove,
-              color: const Color.fromARGB(255, 255, 37, 22),
-            ),
-            onPressed: () =>
-                setState(() => itemCount != 0 ? itemCount-- : itemCount),
-          ),
-          Text(
-            itemCount.toString(),
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.add,
-              color: const Color.fromARGB(255, 49, 255, 56),
-            ),
-            onPressed: () => setState(() => itemCount++),
-          )
-        ],
-      ),
-    );
-  }
 }
+//   Widget _buildTrailingWidget() {
+//     int itemCount = 0;
+//     return FittedBox(
+//       child: Row(
+//         children: [
+//           IconButton(
+//             icon: Icon(
+//               Icons.remove,
+//               color: const Color.fromARGB(255, 255, 37, 22),
+//             ),
+//             onPressed: () =>
+//                 setState(() => itemCount != 0 ? itemCount-- : itemCount),
+//           ),
+//           Text(
+//             itemCount.toString(),
+//             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+//           ),
+//           IconButton(
+//             icon: Icon(
+//               Icons.add,
+//               color: const Color.fromARGB(255, 49, 255, 56),
+//             ),
+//             onPressed: () => setState(() => itemCount++),
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
