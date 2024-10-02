@@ -50,7 +50,7 @@ class _CartState extends State<Cart> {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    height: screenHeight * 0.1,
+                    height: screenHeight * 0.11,
                     decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
@@ -74,6 +74,8 @@ class _CartState extends State<Cart> {
                             '${cartList[index]["name"]}',
                             style: TextStyle(fontWeight: FontWeight.bold),
                           ),
+                          Text('Count: ' '${cartList[index]["count"]}',
+                              style: TextStyle(fontWeight: FontWeight.bold)),
                           Text('Price: ' '${cartList[index]["price"]}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           Text('')

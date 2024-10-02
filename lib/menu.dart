@@ -10,14 +10,25 @@ import 'package:menu_task/poducts.dart';
 import 'package:menu_task/product/bloc/product_bloc.dart';
 
 List<dynamic> cartList = [];
+List<dynamic> qtyList = [];
+
 double totalPrice = 0.0;
-bool isItemAdded(String id) {
+bool isItemAdded(String id, int listType) {
   int itemExists = 0;
-  cartList.forEach((element) {
-    if (element['id'] == id) {
-      itemExists++;
-    }
-  });
+
+  if (listType == 1) {
+    cartList.forEach((element) {
+      if (element['id'] == id) {
+        itemExists++;
+      }
+    });
+  } else {
+    qtyList.forEach((element) {
+      if (element['id'] == id) {
+        itemExists++;
+      }
+    });
+  }
   if (itemExists > 0) {
     return true;
   }
@@ -241,15 +252,16 @@ class _mainmenuState extends State<mainmenu> {
                             'id': id,
                             'name': productName,
                             'price': productPrice,
-                            'items': itemCount
+                            'count': 1
                           });
                           totalPrice = totalPrice + productPrice;
                         } else {
-                          if (isItemAdded(id)) {
+                          if (isItemAdded(id, 1)) {
                             for (var i = 0; i < cartList.length; i++) {
                               if (cartList[i]['id'] == id) {
                                 cartList[i]['price'] =
                                     cartList[i]['price'] + productPrice;
+                                cartList[i]['count'] = cartList[i]['count'] + 1;
                                 totalPrice = totalPrice + productPrice;
                               }
                             }
@@ -258,15 +270,29 @@ class _mainmenuState extends State<mainmenu> {
                               'id': id,
                               'name': productName,
                               'price': productPrice,
-                              'item': itemCount
+                              'count': 1
                             });
                             totalPrice = totalPrice + productPrice;
                           }
                         }
+                        if (qtyList.isEmpty) {
+                          qtyList.add({"id": id, 'count': 1});
+                        } else {
+                          if (isItemAdded(id, 2)) {
+                            for (var x = 0; x < qtyList.length; x++) {
+                              if (qtyList[x]['id'] == id) {
+                                qtyList[x]['count'] = qtyList[x]['count'] + 1;
+                              }
+                            }
+                          } else {
+                            qtyList.add({'id': id, 'count': 1});
+                          }
+                        }
 
+                        print('qty: $qtyList');
                         print(cartList);
                         print('Total Price = $totalPrice');
-                        print(itemCount);
+                        // print(itemCount);
                       },
                       child: Column(
                         children: [
@@ -293,7 +319,7 @@ class _mainmenuState extends State<mainmenu> {
                                                 : itemCount),
                                       ),
                                       Text(
-                                        itemCount.toString(),
+                                        0.toString(),
                                         style: TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold),
