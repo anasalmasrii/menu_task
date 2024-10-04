@@ -10,6 +10,7 @@ import 'package:menu_task/product/bloc/product_bloc.dart';
 
 List<dynamic> cartList = [];
 List<dynamic> qtyList = [];
+List counterList = List.generate(99999, (index) => 0);
 double totalPrice = 0.0;
 bool isItemAdded(String id, int listType) {
   int itemExists = 0;
@@ -151,6 +152,7 @@ class _mainmenuState extends State<mainmenu> {
                                   Productmodel.products![index].images!.first,
                                   Productmodel.products![index].title,
                                   Productmodel.products![index].price,
+                                  index,
                                   screenWidth,
                                   screenHeight);
                             },
@@ -164,8 +166,7 @@ class _mainmenuState extends State<mainmenu> {
   }
 
   Widget categories(String id, String img, String productName,
-      double productPrice, screenWidth, screenHeight) {
-    // int itemCount = 0;
+      double productPrice, int indx, screenWidth, screenHeight) {
     return Padding(
         padding: EdgeInsets.only(
             top: screenHeight * 0.02,
@@ -226,63 +227,77 @@ class _mainmenuState extends State<mainmenu> {
                   children: [
                     Column(
                       children: [
-                        counter(screenHeight, screenWidth),
+                        counter(screenHeight, screenWidth, indx),
                         GestureDetector(
                           onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Item Added to cart!'),
-                                duration: Durations.short4,
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                            if (cartList.isEmpty) {
-                              cartList.add({
-                                'id': id,
-                                'name': productName,
-                                'price': productPrice,
-                                'count': 1
+                            if (counterList[indx] != 0) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text('Item Added to cart!'),
+                                  duration: Durations.short4,
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                              /////////////////////////////
+                              setState(() {
+                                if (cartList.isEmpty) {
+                                  cartList.add({
+                                    'id': id,
+                                    'name': productName,
+                                    'price': productPrice * counterList[indx],
+                                    'count': counterList[indx]
+                                  });
+                                  totalPrice = totalPrice +
+                                      (counterList[indx] * productPrice);
+                                  counterList[indx] = 0;
+                                } else {
+                                  if (isItemAdded(id, 1)) {
+                                    for (var i = 0; i < cartList.length; i++) {
+                                      if (cartList[i]['id'] == id) {
+                                        cartList[i]['price'] = cartList[i]
+                                                ['price'] +
+                                            (counterList[indx] * productPrice);
+                                        cartList[i]['count'] = cartList[i]
+                                                ['count'] +
+                                            counterList[indx];
+                                        totalPrice = totalPrice +
+                                            (counterList[indx] * productPrice);
+                                        counterList[indx] = 0;
+                                      }
+                                    }
+                                  } else {
+                                    cartList.add({
+                                      'id': id,
+                                      'name': productName,
+                                      'price': productPrice * counterList[indx],
+                                      'count': counterList[indx]
+                                    });
+                                    totalPrice = totalPrice +
+                                        (counterList[indx] * productPrice);
+                                    counterList[indx] = 0;
+                                  }
+                                }
                               });
-                              totalPrice = totalPrice + productPrice;
-                            } else {
-                              if (isItemAdded(id, 1)) {
-                                for (var i = 0; i < cartList.length; i++) {
-                                  if (cartList[i]['id'] == id) {
-                                    cartList[i]['price'] =
-                                        cartList[i]['price'] + productPrice;
-                                    cartList[i]['count'] =
-                                        cartList[i]['count'] + 1;
-                                    totalPrice = totalPrice + productPrice;
-                                  }
-                                }
+                              /////////////////////////////////////////
+                              if (qtyList.isEmpty) {
+                                qtyList.add({"id": id, 'count': 1});
                               } else {
-                                cartList.add({
-                                  'id': id,
-                                  'name': productName,
-                                  'price': productPrice,
-                                  'count': 1
-                                });
-                                totalPrice = totalPrice + productPrice;
-                              }
-                            }
-                            if (qtyList.isEmpty) {
-                              qtyList.add({"id": id, 'count': 1});
-                            } else {
-                              if (isItemAdded(id, 2)) {
-                                for (var x = 0; x < qtyList.length; x++) {
-                                  if (qtyList[x]['id'] == id) {
-                                    qtyList[x]['count'] =
-                                        qtyList[x]['count'] + 1;
+                                if (isItemAdded(id, 2)) {
+                                  for (var x = 0; x < qtyList.length; x++) {
+                                    if (qtyList[x]['id'] == id) {
+                                      qtyList[x]['count'] =
+                                          qtyList[x]['count'] + 1;
+                                    }
                                   }
+                                } else {
+                                  qtyList.add({'id': id, 'count': 1});
                                 }
-                              } else {
-                                qtyList.add({'id': id, 'count': 1});
                               }
-                            }
 
-                            print('qty: $qtyList');
-                            print(cartList);
-                            print('Total Price = $totalPrice');
+                              print('qty: $qtyList');
+                              print(cartList);
+                              print('Total Price = $totalPrice');
+                            }
                           },
                           child: Container(
                             width: screenWidth * 0.25,
@@ -312,7 +327,7 @@ class _mainmenuState extends State<mainmenu> {
         ));
   }
 
-  Widget counter(screenHeight, screenWidth) {
+  Widget counter(screenHeight, screenWidth, int indx) {
     return Container(
       width: screenWidth * 0.2,
       height: screenHeight * 0.08,
@@ -323,11 +338,12 @@ class _mainmenuState extends State<mainmenu> {
         children: [
           GestureDetector(
             onTap: () {
-              if (int.parse('0') > 0) {
-                setState(() {
-                  // plusMinusButton(false, itemID);
-                });
-              }
+              setState(() {
+                // plusMinusButton(false, itemID);
+                if (counterList[indx] != 0) {
+                  changeCounterVal(false, indx);
+                }
+              });
             },
             child: Container(
               width: screenWidth * 0.06,
@@ -349,16 +365,14 @@ class _mainmenuState extends State<mainmenu> {
               color: Colors.transparent,
               child: Center(
                   child: Text(
-                '0',
+                counterList[indx].toString(),
                 style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontWeight: FontWeight.w500,
-                    fontSize: screenWidth * 0.045),
+                    fontWeight: FontWeight.w500, fontSize: screenWidth * 0.045),
               ))),
           GestureDetector(
             onTap: () {
               setState(() {
-                // plusMinusButton(true, itemID);
+                changeCounterVal(true, indx);
               });
             },
             child: Container(
@@ -379,4 +393,15 @@ class _mainmenuState extends State<mainmenu> {
       ),
     );
   }
+}
+
+void changeCounterVal(bool operation, int indx) {
+  int op = 0;
+  if (operation) {
+    op = 1;
+  } else {
+    op = -1;
+  }
+
+  counterList[indx] = counterList[indx] + op;
 }

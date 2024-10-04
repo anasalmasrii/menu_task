@@ -76,7 +76,9 @@ class _CartState extends State<Cart> {
                           ),
                           Text('Count: ' '${cartList[index]["count"]}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
-                          Text('Price: ' '${cartList[index]["price"]}',
+                          Text(
+                              'Price: '
+                              '${cartList[index]["price"].toStringAsFixed(2)}',
                               style: TextStyle(fontWeight: FontWeight.bold)),
                           Text('')
                         ],
@@ -97,7 +99,7 @@ class _CartState extends State<Cart> {
                 color: Colors.green),
             child: Center(
               child: Text(
-                'Total Price:  $totalPrice',
+                'Total Price:  ${totalPrice.toStringAsFixed(2)}',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
               ),
             ),
