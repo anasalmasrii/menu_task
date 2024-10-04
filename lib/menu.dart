@@ -4,14 +4,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:item_count_number_button/item_count_number_button.dart';
 import 'package:menu_task/cart.dart';
 import 'package:menu_task/poducts.dart';
 import 'package:menu_task/product/bloc/product_bloc.dart';
 
 List<dynamic> cartList = [];
 List<dynamic> qtyList = [];
-
 double totalPrice = 0.0;
 bool isItemAdded(String id, int listType) {
   int itemExists = 0;
@@ -48,7 +46,6 @@ class _mainmenuState extends State<mainmenu> {
 
   @override
   Widget build(BuildContext context) {
-    // int _itemCount = 0;
     var size = MediaQuery.of(context).size;
     var screenHeight = size.height;
     var screenWidth = size.width;
@@ -166,7 +163,6 @@ class _mainmenuState extends State<mainmenu> {
     );
   }
 
-  int itemCount = 0;
   Widget categories(String id, String img, String productName,
       double productPrice, screenWidth, screenHeight) {
     // int itemCount = 0;
@@ -228,116 +224,67 @@ class _mainmenuState extends State<mainmenu> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    // Container(
-                    //   width: screenWidth * 1,
-                    //   height: screenHeight * 0.05,
-                    //   // color: Colors.blue,
-                    //   decoration: BoxDecoration(
-                    //       color: Colors.blue,
-                    //       borderRadius: BorderRadius.all(Radius.circular(10))),
-                    //   child: _buildTrailingWidget(),
-                    // ),
-
-                    GestureDetector(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Item Added to cart!'),
-                            duration: Durations.short4,
-                            backgroundColor: Colors.green,
-                          ),
-                        );
-                        if (cartList.isEmpty) {
-                          cartList.add({
-                            'id': id,
-                            'name': productName,
-                            'price': productPrice,
-                            'count': 1
-                          });
-                          totalPrice = totalPrice + productPrice;
-                        } else {
-                          if (isItemAdded(id, 1)) {
-                            for (var i = 0; i < cartList.length; i++) {
-                              if (cartList[i]['id'] == id) {
-                                cartList[i]['price'] =
-                                    cartList[i]['price'] + productPrice;
-                                cartList[i]['count'] = cartList[i]['count'] + 1;
+                    Column(
+                      children: [
+                        counter(screenHeight, screenWidth),
+                        GestureDetector(
+                          onTap: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Item Added to cart!'),
+                                duration: Durations.short4,
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                            if (cartList.isEmpty) {
+                              cartList.add({
+                                'id': id,
+                                'name': productName,
+                                'price': productPrice,
+                                'count': 1
+                              });
+                              totalPrice = totalPrice + productPrice;
+                            } else {
+                              if (isItemAdded(id, 1)) {
+                                for (var i = 0; i < cartList.length; i++) {
+                                  if (cartList[i]['id'] == id) {
+                                    cartList[i]['price'] =
+                                        cartList[i]['price'] + productPrice;
+                                    cartList[i]['count'] =
+                                        cartList[i]['count'] + 1;
+                                    totalPrice = totalPrice + productPrice;
+                                  }
+                                }
+                              } else {
+                                cartList.add({
+                                  'id': id,
+                                  'name': productName,
+                                  'price': productPrice,
+                                  'count': 1
+                                });
                                 totalPrice = totalPrice + productPrice;
                               }
                             }
-                          } else {
-                            cartList.add({
-                              'id': id,
-                              'name': productName,
-                              'price': productPrice,
-                              'count': 1
-                            });
-                            totalPrice = totalPrice + productPrice;
-                          }
-                        }
-                        if (qtyList.isEmpty) {
-                          qtyList.add({"id": id, 'count': 1});
-                        } else {
-                          if (isItemAdded(id, 2)) {
-                            for (var x = 0; x < qtyList.length; x++) {
-                              if (qtyList[x]['id'] == id) {
-                                qtyList[x]['count'] = qtyList[x]['count'] + 1;
+                            if (qtyList.isEmpty) {
+                              qtyList.add({"id": id, 'count': 1});
+                            } else {
+                              if (isItemAdded(id, 2)) {
+                                for (var x = 0; x < qtyList.length; x++) {
+                                  if (qtyList[x]['id'] == id) {
+                                    qtyList[x]['count'] =
+                                        qtyList[x]['count'] + 1;
+                                  }
+                                }
+                              } else {
+                                qtyList.add({'id': id, 'count': 1});
                               }
                             }
-                          } else {
-                            qtyList.add({'id': id, 'count': 1});
-                          }
-                        }
 
-                        print('qty: $qtyList');
-                        print(cartList);
-                        print('Total Price = $totalPrice');
-                        // print(itemCount);
-                      },
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding:
-                                EdgeInsets.only(bottom: screenHeight * 0.01),
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.green[200],
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                child: FittedBox(
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.remove,
-                                          color: const Color.fromARGB(
-                                              255, 255, 37, 22),
-                                        ),
-                                        onPressed: () => setState(() =>
-                                            itemCount != 0
-                                                ? itemCount--
-                                                : itemCount),
-                                      ),
-                                      Text(
-                                        0.toString(),
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(
-                                          Icons.add,
-                                          color: const Color.fromARGB(
-                                              255, 49, 255, 56),
-                                        ),
-                                        onPressed: () =>
-                                            setState(() => itemCount++),
-                                      )
-                                    ],
-                                  ),
-                                )),
-                          ),
-                          Container(
+                            print('qty: $qtyList');
+                            print(cartList);
+                            print('Total Price = $totalPrice');
+                          },
+                          child: Container(
                             width: screenWidth * 0.25,
                             height: screenHeight * 0.05,
                             decoration: BoxDecoration(
@@ -354,8 +301,8 @@ class _mainmenuState extends State<mainmenu> {
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     )
                   ],
                 ),
@@ -364,33 +311,72 @@ class _mainmenuState extends State<mainmenu> {
           ),
         ));
   }
+
+  Widget counter(screenHeight, screenWidth) {
+    return Container(
+      width: screenWidth * 0.2,
+      height: screenHeight * 0.08,
+      color: Colors.transparent,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              if (int.parse('0') > 0) {
+                setState(() {
+                  // plusMinusButton(false, itemID);
+                });
+              }
+            },
+            child: Container(
+              width: screenWidth * 0.06,
+              height: screenHeight * 0.04,
+              decoration: const BoxDecoration(
+                  color: Colors.red, shape: BoxShape.circle),
+              child: Center(
+                child: Icon(
+                  Icons.remove,
+                  color: Colors.white,
+                  size: screenWidth * 0.04,
+                ),
+              ),
+            ),
+          ),
+          Container(
+              width: screenWidth * 0.06,
+              height: screenHeight * 0.04,
+              color: Colors.transparent,
+              child: Center(
+                  child: Text(
+                '0',
+                style: TextStyle(
+                    fontFamily: 'Montserrat',
+                    fontWeight: FontWeight.w500,
+                    fontSize: screenWidth * 0.045),
+              ))),
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                // plusMinusButton(true, itemID);
+              });
+            },
+            child: Container(
+              width: screenWidth * 0.06,
+              height: screenHeight * 0.04,
+              decoration: const BoxDecoration(
+                  color: Colors.green, shape: BoxShape.circle),
+              child: Center(
+                child: Icon(
+                  Icons.add,
+                  color: Colors.white,
+                  size: screenWidth * 0.04,
+                ),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
 }
-//   Widget _buildTrailingWidget() {
-//     int itemCount = 0;
-//     return FittedBox(
-//       child: Row(
-//         children: [
-//           IconButton(
-//             icon: Icon(
-//               Icons.remove,
-//               color: const Color.fromARGB(255, 255, 37, 22),
-//             ),
-//             onPressed: () =>
-//                 setState(() => itemCount != 0 ? itemCount-- : itemCount),
-//           ),
-//           Text(
-//             itemCount.toString(),
-//             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//           ),
-//           IconButton(
-//             icon: Icon(
-//               Icons.add,
-//               color: const Color.fromARGB(255, 49, 255, 56),
-//             ),
-//             onPressed: () => setState(() => itemCount++),
-//           )
-//         ],
-//       ),
-//     );
-//   }
-// }
